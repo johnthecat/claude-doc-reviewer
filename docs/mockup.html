@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doc reviewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --background: #09090b; --foreground: #fafafa; --card: #0c0c0e; --muted: #27272a; --muted-foreground: #a1a1aa;
+    --border: #27272a; --input: #27272a; --primary: #fafafa; --primary-foreground: #18181b; --ring: #52525b;
+    --accent: #18181b; --approved: #22c55e; --pointer: #f59e0b; --warn-bg: #1c1405; --warn-border: #78350f; --warn-fg: #fcd34d;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--background); color: var(--foreground); font: 14px/1.6 Geist, Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 20px; border-bottom: 1px solid var(--border); background: rgba(9,9,11,.85); backdrop-filter: blur(8px); }
+  .crumb { color: var(--muted-foreground); font-size: 13px; }
+  .crumb b { color: var(--foreground); font-weight: 500; }
+  .sp { flex: 1; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .badge i { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 6px; font: 500 13px Geist, system-ui, sans-serif; border: 1px solid var(--border); background: transparent; color: var(--foreground); cursor: pointer; }
+  .btn:hover { background: var(--accent); }
+  .btn.primary { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+  .btn.ghost { border-color: transparent; color: var(--muted-foreground); }
+  .btn.sm { height: 28px; padding: 0 10px; font-size: 12.5px; }
+  .kbd { font: 11px "Geist Mono", monospace; color: var(--muted-foreground); border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; }
+
+  .layout { display: grid; grid-template-columns: 1fr minmax(0, 720px) 300px 1fr; gap: 0 32px; padding: 40px 20px 120px; }
+  .doc { grid-column: 2; }
+  .rail { grid-column: 3; position: relative; }
+
+  .doc h1 { font-size: 30px; line-height: 1.2; letter-spacing: -.02em; font-weight: 600; margin: 0 0 12px; }
+  .doc h2 { font-size: 20px; letter-spacing: -.01em; font-weight: 600; margin: 32px 0 8px; }
+  .doc p, .doc ul { margin: 0 0 12px; color: #e4e4e7; }
+  .doc ul { padding-left: 20px; }
+  .doc code { font: 12.5px "Geist Mono", monospace; background: var(--muted); padding: 1px 5px; border-radius: 4px; }
+
+  .blk { position: relative; }
+  .blk::before { content: ""; position: absolute; left: -20px; top: 6px; bottom: 6px; width: 2px; border-radius: 2px; background: transparent; }
+  .blk.approved::before { background: var(--approved); opacity: .55; }
+  .blk.approved p, .blk.approved li { color: var(--muted-foreground); }
+  .blk.pointer::before { background: var(--pointer); width: 3px; left: -21px; }
+  .blk.changed { animation: flash 2.4s ease-out; border-radius: 6px; }
+  @keyframes flash { 0% { background: rgba(59,130,246,.18); } 100% { background: transparent; } }
+  .hl { background: rgba(245,158,11,.18); border-bottom: 1px solid var(--pointer); border-radius: 2px; padding: 0 1px; }
+
+  .card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+  .pcard { margin: 8px 0 20px; padding: 14px 16px; }
+  .pcard .head { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted-foreground); margin-bottom: 10px; }
+  .pcard .head .ix { font: 12px "Geist Mono", monospace; color: var(--pointer); }
+  .q { display: grid; grid-template-columns: 18px 1fr; gap: 4px 6px; font-size: 13.5px; margin-bottom: 8px; }
+  .q .n { color: var(--muted-foreground); font-family: "Geist Mono", monospace; font-size: 12.5px; padding-top: 1px; }
+  .input { width: 100%; height: 32px; border: 1px solid var(--input); border-radius: 6px; background: transparent; color: var(--foreground); font: 13px Geist, system-ui, sans-serif; padding: 0 10px; outline: none; }
+  .input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px rgba(82,82,91,.35); }
+  .actions { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+
+  .alert { margin: 8px 0 20px; padding: 12px 14px; border: 1px solid var(--warn-border); background: var(--warn-bg); border-radius: var(--radius); font-size: 13.5px; }
+  .alert .t { color: var(--warn-fg); font-weight: 500; margin-bottom: 2px; }
+  .alert .d { color: #d4d4d8; }
+
+  .note { position: absolute; width: 100%; padding: 12px 14px; font-size: 13px; }
+  .note .quote { color: var(--muted-foreground); border-left: 2px solid var(--pointer); padding-left: 8px; margin-bottom: 8px; font-size: 12.5px; }
+  .note .meta { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; color: var(--muted-foreground); }
+  .spin { width: 12px; height: 12px; border: 2px solid var(--muted); border-top-color: var(--muted-foreground); border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .note.draft textarea { width: 100%; min-height: 56px; resize: none; border: 1px solid var(--input); border-radius: 6px; background: transparent; color: var(--foreground); font: 13px Geist, system-ui, sans-serif; padding: 8px 10px; outline: none; }
+
+  .float { position: absolute; transform: translateY(-120%); display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: 8px; background: #18181b; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+
+  .toast { position: fixed; right: 20px; bottom: 20px; width: 340px; padding: 12px 14px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .toast .t { font-weight: 500; }
+  .toast .d { color: var(--muted-foreground); font-size: 12.5px; }
+
+  .caption { max-width: 1060px; margin: 0 auto; padding: 0 20px 24px; color: var(--muted-foreground); font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="crumb">.claude/skills/document-editor / <b>SKILL.md</b></span>
+    <span class="sp"></span>
+    <span class="badge"><i style="background:var(--approved)"></i>9 approved</span>
+    <span class="badge"><i style="background:var(--muted-foreground)"></i>6 open</span>
+    <span class="badge"><i style="background:var(--approved)"></i>Claude listening</span>
+    <button class="btn ghost sm">Activity</button>
+    <button class="btn sm">Finish review</button>
+  </div>
+
+  <div class="layout">
+    <div class="doc">
+      <div class="blk approved">
+        <h1>Document editor</h1>
+        <p>Review a document with the user one block at a time. A pointer marks the block under review. Blocks the user approves are fixed.</p>
+      </div>
+
+      <div class="blk approved">
+        <h2>Terms</h2>
+        <ul>
+          <li><b>Block</b>: a paragraph together with the lists, tables and code blocks that follow it.</li>
+          <li><b>Pointer</b>: the block under review.</li>
+        </ul>
+      </div>
+      <div class="alert">
+        <div class="t">This change touches an approved block</div>
+        <div class="d">Your comment on <i>Each turn</i> would make each list item its own block, which changes the Block definition above.</div>
+        <div class="actions"><button class="btn primary sm">Apply anyway</button><button class="btn sm">Cancel</button></div>
+      </div>
+
+      <div class="blk pointer">
+        <h2>Each turn</h2>
+        <p>Show where the pointer is and ask your questions about that block. <span class="hl">Do not print the block.</span> Its first 2-3 words tell the user where to start, and the location opens the rest.</p>
+      </div>
+      <div class="card pcard">
+        <div class="head"><span class="ix">5 / 15</span><span>Each turn</span><span class="sp"></span><span class="kbd">A</span><span>approve</span><span class="kbd">J</span><span>skip</span></div>
+        <div class="q"><span class="n">1</span><span>Should the pointer view also print the counts?</span><span></span><input class="input" placeholder="Answer…"></div>
+        <div class="actions"><button class="btn primary sm">Approve</button><button class="btn sm">Skip</button></div>
+      </div>
+
+      <div class="blk changed">
+        <p>Then act on the user's reply, using the table below.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Approved text</h2>
+        <p>Never change an approved block without the user confirming it, even when the user asked for the change. A contradiction you find in one is a question for the user, not a fix.</p>
+      </div>
+    </div>
+
+    <div class="rail">
+      <div class="card note" style="top:318px">
+        <div class="quote">Do not print the block.</div>
+        Make this softer, it reads like an order.
+        <div class="meta"><span class="spin"></span>Claude is editing…</div>
+      </div>
+      <div class="card note draft" style="top:470px">
+        <div class="quote">Then act on the user's reply</div>
+        <textarea placeholder="Leave a comment…"></textarea>
+        <div class="actions" style="margin-top:8px"><button class="btn primary sm">Send</button><button class="btn ghost sm">Cancel</button><span class="sp"></span><span class="kbd">⌘↵</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card toast">
+    <div class="t">Updated “Each turn”</div>
+    <div class="d">Also adjusted: Reply table</div>
+  </div>
+
+  <p class="caption">Mockup: dark by default, shadcn/ui look (zinc palette, Geist, hairline borders). Left margin bar: green approved, amber pointer, none for open. Comments live in the right rail; a sent one shows Claude working, a draft has Send. The only confirm is the amber alert under an approved block. Edits flash the changed block and raise one toast.</p>
+</body>
+</html>

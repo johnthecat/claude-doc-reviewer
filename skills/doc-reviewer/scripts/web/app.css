@@ -1,0 +1,967 @@
+/*
+ * The review page in GitHub's Primer design system. Components take their names and declarations from @primer/react
+ * (Button, IconButton, Label, CounterLabel, Spinner, TextInput, Banner, Overlay, ActionList, Dialog, Timeline,
+ * Blankslate, KeybindingHint) and their values from the tokens in primitives.css.
+ */
+
+:root {
+  --app-header-height: 56px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+[popover] {
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: inherit;
+}
+
+body {
+  margin: 0;
+  background: var(--bgColor-default);
+  color: var(--fgColor-default);
+  font: var(--text-body-shorthand-medium);
+  -webkit-font-smoothing: antialiased;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.truncate {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.octicon {
+  flex: none;
+  vertical-align: text-bottom;
+}
+
+/* App header */
+
+.AppHeader {
+  position: sticky;
+  top: 0;
+  z-index: var(--zIndex-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8);
+  height: var(--app-header-height);
+  padding: 0 var(--base-size-16);
+  background: var(--bgColor-inset);
+  box-shadow: inset 0 calc(var(--borderWidth-thin) * -1) var(--borderColor-default);
+}
+
+.Breadcrumbs {
+  color: var(--fgColor-muted);
+}
+
+.Breadcrumbs b {
+  color: var(--fgColor-default);
+  font-weight: var(--base-text-weight-semibold);
+}
+
+/* Button and IconButton */
+
+.Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--base-size-8);
+  height: var(--control-medium-size);
+  min-width: max-content;
+  padding: 0 var(--control-medium-paddingInline-normal);
+  border: var(--borderWidth-thin) solid;
+  border-color: var(--button-default-borderColor-rest);
+  border-radius: var(--borderRadius-medium);
+  background-color: transparent;
+  color: var(--button-default-fgColor-rest);
+  font-family: inherit;
+  font-size: var(--text-body-size-medium);
+  font-weight: var(--base-text-weight-medium);
+  cursor: pointer;
+  appearance: none;
+  user-select: none;
+  transition: 80ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition-property: color, fill, background-color, border-color;
+}
+
+.Button:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+  box-shadow: none;
+}
+
+.Button:active {
+  transition: none;
+}
+
+.Button[data-size="small"] {
+  gap: var(--control-small-gap);
+  height: var(--control-small-size);
+  padding: 0 var(--control-small-paddingInline-condensed);
+  font-size: var(--text-body-size-small);
+}
+
+.Button[data-variant="default"] {
+  background-color: var(--button-default-bgColor-rest);
+  box-shadow: var(--button-default-shadow-resting);
+}
+
+.Button[data-variant="default"]:hover {
+  background-color: var(--button-default-bgColor-hover);
+  border-color: var(--button-default-borderColor-hover);
+}
+
+.Button[data-variant="default"]:active {
+  background-color: var(--button-default-bgColor-active);
+  border-color: var(--button-default-borderColor-active);
+}
+
+.Button[data-variant="primary"] {
+  background-color: var(--button-primary-bgColor-rest);
+  border-color: var(--button-primary-borderColor-rest);
+  box-shadow: var(--shadow-resting-small);
+  color: var(--button-primary-fgColor-rest);
+}
+
+.Button[data-variant="primary"]:hover {
+  background-color: var(--button-primary-bgColor-hover);
+  border-color: var(--button-primary-borderColor-hover);
+}
+
+.Button[data-variant="primary"]:active {
+  background-color: var(--button-primary-bgColor-active);
+  box-shadow: var(--button-primary-shadow-selected);
+}
+
+.Button[data-variant="primary"]:focus-visible {
+  box-shadow: inset 0 0 0 3px var(--fgColor-onEmphasis);
+}
+
+.Button[data-variant="invisible"] {
+  border-color: var(--button-invisible-borderColor-rest);
+}
+
+.Button[data-variant="invisible"]:hover {
+  background-color: var(--button-invisible-bgColor-hover);
+  border-color: var(--button-invisible-borderColor-hover);
+}
+
+.Button[data-variant="invisible"]:active,
+.Button[data-variant="invisible"][aria-expanded="true"] {
+  background-color: var(--button-invisible-bgColor-active);
+}
+
+.Button[data-variant="invisible"] .Visual {
+  color: var(--button-invisible-iconColor-rest);
+}
+
+.Button[data-variant="invisible"]:hover .Visual {
+  color: var(--button-invisible-iconColor-hover);
+}
+
+.Button:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.Button[data-variant="primary"]:disabled {
+  background-color: var(--button-primary-bgColor-disabled);
+  border-color: var(--button-primary-borderColor-disabled);
+  color: var(--button-primary-fgColor-disabled);
+}
+
+.Button .Visual {
+  display: flex;
+  color: var(--fgColor-muted);
+}
+
+.IconButton {
+  flex-shrink: 0;
+  width: var(--control-medium-size);
+  padding: unset;
+}
+
+.IconButton[data-size="small"] {
+  width: var(--control-small-size);
+}
+
+.IconButton[data-variant="invisible"] {
+  color: var(--button-invisible-iconColor-rest);
+}
+
+/* The comment button and form, anchored to the selected text with CSS anchor positioning */
+
+#selection-anchor {
+  position: absolute;
+  pointer-events: none;
+  anchor-name: --selection;
+}
+
+.Button.floating {
+  position: absolute;
+  z-index: var(--zIndex-dropdown);
+  position-anchor: --selection;
+  position-area: top;
+  margin-bottom: var(--base-size-8);
+  box-shadow: var(--shadow-floating-small);
+}
+
+.comment-popover {
+  width: 360px;
+  margin-top: var(--base-size-8);
+  padding: var(--base-size-12);
+  position-anchor: --selection;
+  position-area: bottom span-right;
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+}
+
+.quote {
+  margin-bottom: var(--base-size-8);
+  padding: 0 var(--base-size-8);
+  border-left: 0.25em solid var(--borderColor-default);
+  color: var(--fgColor-muted);
+}
+
+.comment-actions,
+.resolution-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8);
+}
+
+.comment-actions {
+  margin-top: var(--base-size-8);
+}
+
+::highlight(comment-quote) {
+  background-color: var(--bgColor-attention-muted);
+  color: var(--fgColor-default);
+}
+
+#claude-visual[data-status="listening"] {
+  color: var(--fgColor-success);
+}
+
+#claude-visual[data-status="working"] {
+  color: var(--fgColor-attention);
+}
+
+/* Label and CounterLabel */
+
+.Label {
+  display: inline-flex;
+  align-items: center;
+  height: var(--base-size-20);
+  padding: 0 var(--base-size-6);
+  border: var(--borderWidth-thin) solid;
+  border-radius: var(--borderRadius-full);
+  font-size: var(--text-body-size-small);
+  font-weight: var(--base-text-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.Label[data-variant="secondary"] {
+  border-color: var(--borderColor-muted);
+  color: var(--fgColor-muted);
+}
+
+.Label[data-variant="success"] {
+  border-color: var(--borderColor-success-emphasis);
+  color: var(--fgColor-success);
+}
+
+.CounterLabel {
+  display: inline-block;
+  padding: var(--base-size-2) var(--base-size-6);
+  border: var(--borderWidth-thin) solid var(--counter-borderColor);
+  border-radius: var(--borderRadius-full);
+  background-color: var(--counter-bgColor-muted);
+  color: var(--fgColor-default);
+  font-size: var(--text-body-size-small);
+  font-weight: var(--base-text-weight-semibold);
+  line-height: 1;
+}
+
+.CounterLabel:empty {
+  display: none;
+}
+
+/* Spinner */
+
+.Spinner {
+  flex: none;
+  width: var(--spinner-size-small);
+  height: var(--spinner-size-small);
+  stroke-width: var(--spinner-strokeWidth-default);
+  animation: spinner-rotate var(--base-duration-1000) var(--base-easing-linear) infinite;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* KeybindingHint */
+
+.Chord {
+  display: inline-flex;
+  justify-content: center;
+  min-width: var(--base-size-20);
+  padding: var(--base-size-4);
+  border: var(--borderWidth-thin) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-small);
+  font-weight: var(--base-text-weight-normal);
+  line-height: 10px;
+}
+
+.Button:has(.Chord) {
+  padding-inline-end: var(--base-size-6);
+}
+
+.Button .Chord {
+  min-width: var(--base-size-16);
+  padding: var(--base-size-2);
+  border-radius: var(--borderRadius-small);
+  font-size: 11px;
+  line-height: var(--base-size-8);
+}
+
+.Button[data-variant="primary"] .Chord {
+  background: var(--buttonKeybindingHint-primary-bgColor-rest);
+  border-color: var(--buttonKeybindingHint-primary-borderColor-rest);
+  color: var(--buttonKeybindingHint-primary-fgColor-rest);
+}
+
+.Button[data-variant="default"] .Chord {
+  background: var(--buttonKeybindingHint-default-bgColor-rest);
+  border-color: var(--buttonKeybindingHint-default-borderColor-rest);
+  color: var(--buttonKeybindingHint-default-fgColor-rest);
+}
+
+/* TextInput */
+
+.TextInput {
+  display: block;
+  width: 100%;
+  min-height: var(--base-size-32);
+  padding: var(--base-size-6) var(--base-size-12);
+  border: var(--borderWidth-thin) solid var(--control-borderColor-rest);
+  border-radius: var(--borderRadius-medium);
+  background-color: var(--bgColor-default);
+  box-shadow: var(--shadow-inset);
+  color: var(--fgColor-default);
+  font-family: inherit;
+  font-size: var(--text-body-size-medium);
+  line-height: var(--base-size-20);
+  outline: none;
+  resize: none;
+  field-sizing: content;
+}
+
+.TextInput::placeholder {
+  color: var(--fgColor-muted);
+}
+
+.TextInput:focus {
+  border-color: var(--borderColor-accent-emphasis);
+  outline: var(--focus-outline);
+  outline-offset: -1px;
+}
+
+.multiline {
+  min-height: var(--base-size-64);
+  padding: var(--base-size-8) var(--base-size-12);
+  resize: vertical;
+}
+
+/* Box: a bordered container with a header, a body and a footer, as GitHub draws comments */
+
+.Box {
+  border: var(--borderWidth-thin) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+  background-color: var(--bgColor-default);
+}
+
+/* The header and the footer stay in view while a card taller than the window scrolls. */
+.Box-header,
+.Box-footer {
+  position: sticky;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8);
+  padding: var(--base-size-8) var(--base-size-16);
+}
+
+.Box-header {
+  top: var(--app-header-height);
+  border-bottom: var(--borderWidth-thin) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium) var(--borderRadius-medium) 0 0;
+  background-color: var(--bgColor-muted);
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-small);
+}
+
+.Box-body {
+  padding: var(--base-size-16);
+}
+
+.Box-footer {
+  bottom: 0;
+  border-top: var(--borderWidth-thin) solid var(--borderColor-default);
+  border-radius: 0 0 var(--borderRadius-medium) var(--borderRadius-medium);
+  background-color: var(--bgColor-default);
+}
+
+/* Banner */
+
+.Banner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  padding: var(--base-size-8);
+  border: var(--borderWidth-thin) solid var(--banner-borderColor);
+  border-radius: var(--borderRadius-medium);
+  background-color: var(--banner-bgColor);
+}
+
+.Banner[data-variant="warning"] {
+  --banner-bgColor: var(--bgColor-attention-muted);
+  --banner-borderColor: var(--borderColor-attention-muted);
+  --banner-icon-fgColor: var(--fgColor-attention);
+}
+
+.Banner[data-variant="success"] {
+  --banner-bgColor: var(--bgColor-success-muted);
+  --banner-borderColor: var(--borderColor-success-muted);
+  --banner-icon-fgColor: var(--fgColor-success);
+}
+
+.BannerIcon {
+  display: grid;
+  place-items: center;
+  padding: var(--base-size-8);
+  color: var(--banner-icon-fgColor);
+}
+
+.BannerContent {
+  display: grid;
+  row-gap: var(--base-size-4);
+  margin-block: var(--base-size-8);
+  padding-right: var(--base-size-8);
+}
+
+.BannerTitle {
+  margin: 0;
+  font-size: inherit;
+  font-weight: var(--base-text-weight-semibold);
+}
+
+.BannerDescription {
+  white-space: pre-wrap;
+}
+
+/* Overlay and ActionList */
+
+.Overlay,
+.Dialog {
+  background-color: var(--overlay-bgColor);
+  box-shadow: var(--shadow-floating-small);
+}
+
+.Overlay {
+  min-width: var(--overlay-width-xsmall);
+  max-height: 100vh;
+  overflow: auto;
+  border-radius: var(--borderRadius-large);
+}
+
+.Overlay,
+.help[open] {
+  animation: overlay-appear var(--base-duration-200) cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+@keyframes overlay-appear {
+  0% {
+    opacity: 0;
+  }
+}
+
+.ActionList {
+  margin: 0;
+  padding: var(--base-size-8);
+  list-style: none;
+}
+
+.ActionList .GroupHeading {
+  padding: var(--base-size-6) var(--base-size-8);
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-small);
+  font-weight: var(--base-text-weight-semibold);
+}
+
+.ActionListItem {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8);
+  padding: var(--control-medium-paddingBlock) var(--control-medium-paddingInline-condensed);
+  border-radius: var(--borderRadius-medium);
+  color: var(--control-fgColor-rest);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ActionListItem:not([data-inactive]):hover {
+  background-color: var(--control-transparent-bgColor-hover);
+}
+
+.ActionListItem .LeadingVisual {
+  display: flex;
+  color: var(--fgColor-muted);
+}
+
+.ActionListItem[data-inactive] {
+  color: var(--fgColor-muted);
+  cursor: default;
+}
+
+#claude-status {
+  anchor-name: --claude;
+}
+
+.queue {
+  width: var(--overlay-width-small);
+  margin-top: var(--overlay-offset);
+  position-anchor: --claude;
+  position-area: bottom span-left;
+}
+
+/* Dialog as a side sheet, with a Timeline */
+
+.Dialog .Header {
+  display: flex;
+  align-items: center;
+  padding: var(--base-size-8) var(--base-size-8) var(--base-size-8) var(--base-size-16);
+  box-shadow: 0 var(--borderWidth-thin) 0 var(--borderColor-default);
+}
+
+.Dialog .Title {
+  flex: 1;
+  margin: 0;
+  font-size: var(--text-body-size-medium);
+  font-weight: var(--text-title-weight-large);
+}
+
+.help {
+  width: min(640px, calc(100vw - 2 * var(--base-size-16)));
+  max-height: calc(100vh - 2 * var(--base-size-32));
+  padding: 0;
+  border: none;
+  border-radius: var(--borderRadius-large);
+  color: inherit;
+}
+
+.help[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.help::backdrop {
+  background-color: var(--overlay-backdrop-bgColor);
+}
+
+.help .Body {
+  overflow: auto;
+  padding: var(--base-size-16);
+  background-color: transparent;
+  font-size: var(--text-body-size-medium);
+}
+
+.side-sheet {
+  inset: 0 0 0 auto;
+  width: 380px;
+  height: 100%;
+  border-radius: var(--borderRadius-large) 0 0 var(--borderRadius-large);
+}
+
+.side-sheet:popover-open {
+  display: flex;
+  flex-direction: column;
+}
+
+.Timeline {
+  flex: 1;
+  margin: 0;
+  padding: var(--base-size-8) var(--base-size-16) var(--base-size-16) var(--base-size-32);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.TimelineItem {
+  position: relative;
+  display: flex;
+  gap: var(--base-size-8);
+  padding: var(--base-size-8) 0;
+}
+
+.TimelineItem::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--borderWidth-thick);
+  background-color: var(--borderColor-muted);
+}
+
+.TimelineBadge {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--base-size-32);
+  height: var(--base-size-32);
+  margin-left: -15px;
+  border: var(--borderWidth-thick) solid var(--overlay-bgColor);
+  border-radius: var(--borderRadius-full);
+  background-color: var(--timelineBadge-bgColor);
+  color: var(--fgColor-muted);
+}
+
+.TimelineBadge[data-variant] {
+  color: var(--fgColor-onEmphasis);
+}
+
+.TimelineBadge[data-variant="success"] {
+  background-color: var(--bgColor-success-emphasis);
+}
+
+.TimelineBadge[data-variant="attention"] {
+  background-color: var(--bgColor-attention-emphasis);
+}
+
+.TimelineBody {
+  min-width: 0;
+  padding-top: var(--base-size-6);
+  overflow-wrap: anywhere;
+}
+
+.TimelineBody time {
+  display: block;
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-small);
+}
+
+/* Blankslate */
+
+.Blankslate {
+  display: grid;
+  justify-items: center;
+  max-width: 480px;
+  margin: 15vh auto 0;
+  padding: var(--base-size-32);
+  text-align: center;
+}
+
+.Blankslate .Visual {
+  display: inline-flex;
+  margin-block-end: var(--base-size-8);
+  color: var(--fgColor-muted);
+}
+
+.Blankslate .Visual .octicon {
+  width: var(--base-size-24);
+  height: var(--base-size-24);
+}
+
+.Blankslate .Heading {
+  margin: 0 0 var(--base-size-4);
+  font-size: var(--text-title-size-medium);
+  font-weight: var(--base-text-weight-semibold);
+}
+
+.Blankslate .Description {
+  margin: 0;
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-large);
+  text-wrap: balance;
+}
+
+/* Page layout */
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 760px) 360px 1fr;
+  gap: 0 var(--base-size-40);
+  padding: var(--base-size-40) var(--base-size-24) 160px;
+}
+
+#finished {
+  grid-column: 2 / 4;
+}
+
+#finished .Banner {
+  margin-bottom: var(--base-size-24);
+}
+
+.doc {
+  grid-column: 2;
+  align-self: start;
+  min-width: 0;
+}
+
+.rail {
+  grid-column: 3;
+  position: relative;
+}
+
+/* Blocks */
+
+.blk {
+  position: relative;
+  border-radius: var(--borderRadius-medium);
+}
+
+/* Each block is its own markdown-body, which drops its first and last margins, so the gaps go between blocks. */
+.blk + .blk {
+  margin-top: var(--base-size-16);
+}
+
+.blk + .blk:has(> .blk-body > :is(h1, h2, h3, h4, h5, h6):first-child) {
+  margin-top: var(--base-size-24);
+}
+
+.blk::before {
+  content: "";
+  position: absolute;
+  top: var(--base-size-6);
+  bottom: var(--base-size-6);
+  left: var(--base-size-negative-20);
+  width: var(--borderWidth-thick);
+  border-radius: 2px;
+}
+
+.blk:hover::before {
+  background: var(--borderColor-default);
+}
+
+/* Widens the block's hover and click area into the margin, over its bar. */
+.blk::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--base-size-negative-32);
+  width: 26px;
+}
+
+.blk.approved::before {
+  background: color-mix(in srgb, var(--fgColor-success) 55%, transparent);
+}
+
+.blk.approved .blk-body {
+  opacity: 0.72;
+}
+
+.blk.pointer::before {
+  left: -22px;
+  width: var(--borderWidth-thicker);
+  background: var(--fgColor-attention);
+}
+
+.blk.approved.pointer::before {
+  background: var(--fgColor-success);
+}
+
+/* The rail: cards beside their blocks, sliding when the cards above them change */
+
+.rail > .Box {
+  position: absolute;
+  right: 0;
+  left: 0;
+  transition: top var(--base-duration-200) cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail > .Box {
+    transition: none;
+  }
+}
+
+/* On a narrow page the cards sit under their blocks, like the conflict banner. */
+
+.doc > .Box,
+.conflict {
+  margin: var(--base-size-8) 0 var(--base-size-24);
+}
+
+/* The pointer card */
+
+.pointer-card .index {
+  flex: none;
+  color: var(--fgColor-attention);
+  font-family: var(--fontStack-monospace);
+}
+
+.pointer-card[data-approved] .index {
+  color: var(--fgColor-success);
+}
+
+.pointer-card .title {
+  color: var(--fgColor-default);
+  font-weight: var(--base-text-weight-semibold);
+}
+
+.pointer-card .lines {
+  flex: none;
+  margin-left: auto;
+  font-family: var(--fontStack-monospace);
+}
+
+.question {
+  display: grid;
+  grid-template-columns: var(--base-size-20) 1fr;
+  gap: var(--base-size-4);
+}
+
+.question + .question {
+  margin-top: var(--base-size-16);
+}
+
+.question .number {
+  color: var(--fgColor-muted);
+  font-family: var(--fontStack-monospace);
+}
+
+.question-text {
+  margin-bottom: var(--base-size-8);
+}
+
+.answer-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--base-size-8);
+}
+
+.pending {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8);
+  color: var(--fgColor-muted);
+}
+
+.answer-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Comments in the rail */
+
+.note .Box-body {
+  padding: var(--base-size-12);
+}
+
+.note .reply {
+  margin-top: var(--base-size-8);
+  padding-top: var(--base-size-8);
+  border-top: var(--borderWidth-thin) solid var(--borderColor-muted);
+}
+
+/* The status line under an answer or a comment */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-6);
+  margin-top: var(--base-size-8);
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-small);
+}
+
+.note[data-status="held"] {
+  border-color: var(--borderColor-attention-emphasis);
+  cursor: pointer;
+}
+
+.resolution {
+  display: grid;
+  gap: var(--base-size-8);
+  margin-top: var(--base-size-8);
+}
+
+.note:has(details) {
+  cursor: pointer;
+}
+
+.note:has(details):hover {
+  border-color: var(--borderColor-emphasis);
+}
+
+/* A handled comment folds to one line; opening it shows the whole card in place of that line. */
+.note summary.Box-body {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8);
+  padding: var(--base-size-6) var(--base-size-12);
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-small);
+  list-style: none;
+}
+
+.note details[open] > summary {
+  display: none;
+}
+
+[data-status="done"] :is(.meta, summary) > .octicon {
+  color: var(--fgColor-success);
+}
+
+/* Toasts, drawn as GitHub's floating overlays */
+
+.toasts {
+  position: fixed;
+  right: var(--base-size-16);
+  bottom: var(--base-size-16);
+  z-index: var(--zIndex-overlay);
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-size-8);
+  width: 360px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-12);
+  padding: var(--base-size-12) var(--base-size-16);
+  border-radius: var(--borderRadius-medium);
+}
+
+.toast .octicon {
+  color: var(--fgColor-accent);
+}
+
+/* On a narrow page the cards move out of the rail into the document. */
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr minmax(0, 760px) 1fr;
+  }
+}

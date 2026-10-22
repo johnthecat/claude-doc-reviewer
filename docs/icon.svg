@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#161b22"/>
+  <rect x="192" y="140" width="600" height="720" rx="56" fill="#0d1117" stroke="#30363d" stroke-width="12"/>
+  <!-- approved blocks: thin green bar -->
+  <rect x="244" y="232" width="16" height="132" rx="8" fill="#3fb950"/>
+  <rect x="300" y="250" width="420" height="40" rx="20" fill="#6e7681"/>
+  <rect x="300" y="306" width="330" height="40" rx="20" fill="#6e7681"/>
+  <!-- pointer: thick amber bar on the block under review -->
+  <rect x="216" y="404" width="560" height="152" rx="20" fill="#d29922" fill-opacity="0.14"/>
+  <rect x="236" y="404" width="32" height="152" rx="16" fill="#d29922"/>
+  <rect x="300" y="432" width="400" height="40" rx="20" fill="#e6edf3"/>
+  <rect x="300" y="488" width="290" height="40" rx="20" fill="#e6edf3"/>
+  <!-- open blocks -->
+  <rect x="300" y="618" width="380" height="40" rx="20" fill="#30363d"/>
+  <rect x="300" y="674" width="250" height="40" rx="20" fill="#30363d"/>
+  <!-- approve badge -->
+  <circle cx="760" cy="790" r="150" fill="#238636" stroke="#161b22" stroke-width="32"/>
+  <path d="M690 792 l50 50 l96 -104" fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

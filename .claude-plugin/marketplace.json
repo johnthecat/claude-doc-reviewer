@@ -1,0 +1,16 @@
+{
+  "name": "doc-reviewer",
+  "owner": {
+    "name": "Sergey Zhuravlev",
+    "url": "https://github.com/johnthecat"
+  },
+  "description": "Doc reviewer: review a document block by block with Claude.",
+  "plugins": [
+    {
+      "name": "doc-reviewer",
+      "source": "./",
+      "description": "Review a document block by block with Claude, in the browser or the terminal.",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" data-color-mode="dark" data-dark-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Document review</title>
+    <link rel="icon" href="data:," />
+    <base target="_blank" />
+    <link rel="stylesheet" href="/static/primitives.css" />
+    <link rel="stylesheet" href="/static/markdown.css" />
+    <link rel="stylesheet" href="/static/app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" defer></script>
+  </head>
+  <body>
+    <header class="AppHeader">
+      <span class="Breadcrumbs truncate" id="crumb"></span>
+      <span class="spacer"></span>
+      <span class="Label" data-variant="success" id="approved-count"></span>
+      <span class="Label" data-variant="secondary" id="open-count"></span>
+      <button class="Button" data-variant="invisible" data-size="small" id="claude-status" popovertarget="queue">
+        <span class="Visual" id="claude-visual"></span><span id="claude-label"></span><span class="CounterLabel" id="claude-queued"></span>
+      </button>
+      <button class="Button" data-variant="invisible" data-size="small" popovertarget="activity"><span class="Visual" data-icon="history"></span>Activity</button>
+      <button class="Button" data-variant="invisible" data-size="small" commandfor="help" command="show-modal"><span class="Visual" data-icon="question"></span>Help</button>
+      <button class="Button" data-variant="default" data-size="small" data-action="finish">Finish review</button>
+      <button class="Button" data-variant="invisible" data-size="small" data-action="exit" title="Stop the review server and hand control back to Claude">
+        <span class="Visual" data-icon="sign-out"></span>Exit
+      </button>
+    </header>
+
+    <div class="Blankslate" id="closed" hidden>
+      <span class="Visual" data-icon="sign-out"></span>
+      <h2 class="Heading">Review closed</h2>
+      <p class="Description">Claude has the terminal back, and your progress is saved. You can close this tab.</p>
+    </div>
+
+    <main class="layout">
+      <div id="finished"></div>
+      <article class="doc" id="doc"></article>
+      <aside class="rail" id="rail"></aside>
+    </main>
+
+    <span id="selection-anchor"></span>
+    <button class="Button floating" data-variant="default" data-size="small" id="comment-button" hidden>
+      <span class="Visual" data-icon="comment"></span>Comment
+    </button>
+
+    <form class="Overlay comment-popover" id="comment-popover" popover="manual">
+      <div class="quote truncate" id="comment-quote"></div>
+      <textarea class="TextInput multiline" id="comment-text" placeholder="Leave a comment…" data-draft="comment" autofocus></textarea>
+      <div class="comment-actions">
+        <button class="Button" data-variant="primary" data-size="small" type="submit">Comment</button>
+        <button class="Button" data-variant="invisible" data-size="small" type="button" id="comment-cancel">Cancel</button>
+        <span class="spacer"></span><kbd class="Chord">⌘ ↵</kbd>
+      </div>
+    </form>
+
+    <div class="Overlay queue" id="queue" popover>
+      <ul class="ActionList" id="queue-list"></ul>
+    </div>
+
+    <div class="Dialog side-sheet" id="activity" popover role="dialog" aria-labelledby="activity-title">
+      <div class="Header">
+        <h1 class="Title" id="activity-title">Activity</h1>
+        <button class="Button IconButton" data-variant="invisible" data-size="small" popovertarget="activity" popovertargetaction="hide" aria-label="Close" data-icon="x"></button>
+      </div>
+      <ol class="Timeline" id="activity-list"></ol>
+    </div>
+
+    <dialog class="Dialog help" id="help" aria-labelledby="help-title" closedby="any">
+      <div class="Header">
+        <h1 class="Title" id="help-title">How this review works</h1>
+        <button class="Button IconButton" data-variant="invisible" data-size="small" commandfor="help" command="close" aria-label="Close" data-icon="x"></button>
+      </div>
+      <div class="Body markdown-body">
+        <h2>The rules</h2>
+        <ul>
+          <li>Claude goes through the document one block at a time: a paragraph with the lists, tables and code that follow it. The block under review has an amber bar, and its card next to it holds Claude's questions.</li>
+          <li>Approved blocks have a green bar. They stay as they are unless you confirm a change to them.</li>
+          <li>Every other block is a draft. After each change Claude brings the drafts in line with the approved blocks and with the change.</li>
+          <li>A change that touches an approved block is held back, whole, under that block. Write how to resolve it if you like, then choose Update to let Claude change the approved block, or Drop.</li>
+          <li>Claude takes your requests one at a time, in the order you sent them.</li>
+          <li>The review is done when every block is approved or when you finish it.</li>
+        </ul>
+        <h2>Using the page</h2>
+        <ul>
+          <li>Click a block to move the review there. Clicking a word also selects it.</li>
+          <li>Select text and press <strong>Comment</strong> to ask for a change. <kbd>⌘</kbd> <kbd>↵</kbd> sends it and <kbd>Esc</kbd> cancels. Once Claude makes the change, the review moves to that block if it is open.</li>
+          <li>Ask a question in a comment the same way. Claude answers it on the comment and changes nothing.</li>
+          <li>Answer a question in its field. <kbd>↵</kbd> sends the answer and <kbd>⇧</kbd> <kbd>↵</kbd> adds a line.</li>
+          <li><strong>Approve</strong> (<kbd>A</kbd>) approves the block and moves to the next open one. <strong>Skip</strong> (<kbd>J</kbd>) moves on without approving.</li>
+          <li>The Claude button in the header shows what Claude is doing and lists the requests still waiting.</li>
+          <li><strong>Activity</strong> lists past comments, answers and edits.</li>
+          <li>You can edit the file in your own editor too. The page follows it, and Claude checks the drafts against your edit.</li>
+          <li><strong>Finish review</strong> asks Claude for a summary and ends the review. <strong>Exit</strong> stops the server and hands control back to Claude. Your progress is saved, and opening the review again resumes it. Answers and comments you typed but did not send are kept in this browser until the review finishes.</li>
+        </ul>
+      </div>
+    </dialog>
+
+    <div class="toasts" id="toasts"></div>
+
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>
