@@ -113,7 +113,7 @@ holds a request counts as Claude's, so a user's edit to an approved block made a
 node --test "skills/doc-reviewer/scripts/test/*.test.mjs"
 ```
 
-CI runs the same command on Linux and macOS with Node 22, 24 and 26, and checks the plugin with
+CI runs the same command on Linux with Node 22, 24 and 26, and checks the plugin with
 `claude plugin validate . --profile directory --strict`. The plugin icon, `.claude-plugin/icon.png`, is rendered from
 `docs/icon.svg`.
 
