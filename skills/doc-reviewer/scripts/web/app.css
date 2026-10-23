@@ -814,6 +814,13 @@ body {
   margin: var(--base-size-8) 0 var(--base-size-24);
 }
 
+/* Questions, comments and replies can quote code or paths with no break in them, so cards wrap anywhere. */
+.rail > .Box,
+.doc > .Box,
+.conflict {
+  overflow-wrap: anywhere;
+}
+
 /* The pointer card */
 
 .pointer-card .index {
@@ -839,7 +846,7 @@ body {
 
 .question {
   display: grid;
-  grid-template-columns: var(--base-size-20) 1fr;
+  grid-template-columns: var(--base-size-20) minmax(0, 1fr);
   gap: var(--base-size-4);
 }
 
@@ -871,7 +878,6 @@ body {
 
 .answer-text {
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
 }
 
 /* Comments in the rail */

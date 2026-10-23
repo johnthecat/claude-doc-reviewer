@@ -1,6 +1,6 @@
 {
   "name": "doc-reviewer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Review a document block by block with Claude, in the browser or the terminal.",
   "author": {
     "name": "Sergey Zhuravlev",
